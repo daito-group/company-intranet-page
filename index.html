@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>社内イントラサイト</title>
+<link rel="icon" type="image/png" href="yoko_RGB.png">
+<link rel="apple-touch-icon" href="yoko_RGB.png">
 <style>
   :root {
     --main-color: #2c3e50;
@@ -334,6 +336,10 @@
   </div>
 </div>
 
+<!-- ===== Firebase SDK（NEWSを全員で共有するためのデータベース） ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+
 <script>
 (function () {
   /* ===== ログイン（サイト全体） ===== */
@@ -341,12 +347,33 @@
   var PASSWORD_HASH = "c2a4885469c5457da86f6246a7fc5ca6b77aac45d4b4bf6e98b8cb8bff5449cf";
   /* ===== NEWS編集用パスワード ===== */
   var NEWS_EDIT_HASH = "5b1fe420113c8e6cfe71c91972f6bd00184c423409234a97de3343bc9f030568";
-  var NEWS_KEY = "intranet_news_v1";
 
-  /* 初期表示するお知らせ（編集して保存すると上書きされます） */
+  /* ===== Firebase 設定（NEWSの保存先） ===== */
+  var firebaseConfig = {
+    apiKey: "AIzaSyBU9eSlKEuJiRl77prZvtANob8kp5mZ5u8",
+    authDomain: "daito-intranet.firebaseapp.com",
+    databaseURL: "https://daito-intranet-default-rtdb.firebaseio.com",
+    projectId: "daito-intranet",
+    storageBucket: "daito-intranet.firebasestorage.app",
+    messagingSenderId: "1029120445083",
+    appId: "1:1029120445083:web:4bb2ba8d5760b01330d43e"
+  };
+
+  var newsRef = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    newsRef = firebase.database().ref("news");
+  } catch (e) {
+    console.warn("Firebase 初期化に失敗しました", e);
+  }
+
+  /* 初期表示するお知らせ（データベースが空のときに表示） */
   var DEFAULT_NEWS = [
     { date: "2026/07/01", text: "社内イントラサイトを公開しました。" }
   ];
+
+  /* 現在表示中のお知らせ（Firebaseの内容で更新される） */
+  var currentNews = DEFAULT_NEWS.slice();
 
   function sha256(text) {
     var data = new TextEncoder().encode(text);
@@ -381,18 +408,11 @@
   }
 
   /* ===== NEWS 表示 ===== */
-  function loadNews() {
-    try {
-      var saved = localStorage.getItem(NEWS_KEY);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return DEFAULT_NEWS.slice();
-  }
   function renderNews() {
     var list = document.getElementById("news-list");
-    var items = loadNews();
+    var items = currentNews;
     list.innerHTML = "";
-    if (!items.length) {
+    if (!items || !items.length) {
       list.innerHTML = '<li><span class="empty">お知らせはありません。</span></li>';
       return;
     }
@@ -407,6 +427,17 @@
     });
   }
   renderNews();
+
+  /* Firebaseを監視して、更新があれば全端末で自動反映 */
+  if (newsRef) {
+    newsRef.on("value", function (snapshot) {
+      var val = snapshot.val();
+      currentNews = Array.isArray(val) ? val.filter(function (x) { return x; }) : DEFAULT_NEWS.slice();
+      renderNews();
+    }, function (err) {
+      console.warn("NEWSの読み込みに失敗しました", err);
+    });
+  }
 
   /* ===== NEWS 編集 ===== */
   var newsOverlay = document.getElementById("news-overlay");
@@ -444,7 +475,7 @@
       if (hash === NEWS_EDIT_HASH) {
         document.getElementById("news-auth").style.display = "none";
         document.getElementById("news-editor").style.display = "block";
-        document.getElementById("news-text").value = newsToText(loadNews());
+        document.getElementById("news-text").value = newsToText(currentNews);
       } else {
         document.getElementById("news-auth-err").textContent = "パスワードが違います";
       }
@@ -456,9 +487,20 @@
 
   document.getElementById("news-save").addEventListener("click", function () {
     var items = textToNews(document.getElementById("news-text").value);
-    localStorage.setItem(NEWS_KEY, JSON.stringify(items));
-    renderNews();
-    closeNews();
+    var saveBtn = this;
+    if (!newsRef) {
+      alert("データベースに接続できないため保存できませんでした。通信環境をご確認ください。");
+      return;
+    }
+    saveBtn.disabled = true;
+    newsRef.set(items).then(function () {
+      saveBtn.disabled = false;
+      closeNews();
+    }).catch(function (err) {
+      saveBtn.disabled = false;
+      console.warn("NEWSの保存に失敗しました", err);
+      alert("保存に失敗しました。もう一度お試しください。");
+    });
   });
 
   /* ===== スタッフ割チケット ポップアップ ===== */
