@@ -25,21 +25,17 @@
     text-align: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   }
-  header img {
-    max-height: 80px;
-    height: auto;
-  }
-  main {
-    max-width: 960px;
-    margin: 32px auto;
-    padding: 0 20px;
-  }
+  header img { max-height: 80px; height: auto; }
+  main { max-width: 960px; margin: 32px auto; padding: 0 20px; }
   h2 {
     font-size: 18px;
     color: var(--main-color);
     border-left: 5px solid var(--accent-color);
     padding-left: 10px;
     margin: 36px 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   /* NEWS */
@@ -49,42 +45,32 @@
     padding: 8px 20px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   }
-  #news ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  #news li {
+  #news-list { list-style: none; margin: 0; padding: 0; }
+  #news-list li {
     display: flex;
     gap: 14px;
     padding: 12px 4px;
     border-bottom: 1px solid #eee;
     font-size: 14px;
   }
-  #news li:last-child { border-bottom: none; }
-  #news .date {
-    color: var(--accent-color);
-    font-weight: 600;
-    white-space: nowrap;
+  #news-list li:last-child { border-bottom: none; }
+  #news-list .date { color: var(--accent-color); font-weight: 600; white-space: nowrap; }
+  #news-list .empty { color: #999; }
+  .news-edit-btn {
+    font-size: 12px;
+    font-weight: normal;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 12px;
+    cursor: pointer;
   }
-  #news .empty {
-    color: #999;
-    padding: 12px 4px;
-    font-size: 14px;
-  }
+  .news-edit-btn:hover { background: #2980b9; }
 
   /* グリッド：ロゴタイル */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 18px;
-  }
-  .item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px; }
+  .item { display: flex; flex-direction: column; align-items: center; text-align: center; }
   .item-name {
     font-size: 13px;
     font-weight: 600;
@@ -111,116 +97,68 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     position: relative;
     overflow: hidden;
-    padding: 14px;
+    padding: 16px;
   }
-  .tile:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.16);
-  }
-  .tile img {
-    max-width: 70%;
-    max-height: 70%;
-    object-fit: contain;
-  }
-  .tile.disabled {
-    cursor: default;
-    pointer-events: none;
-    background-color: #f2f4f6;
-    box-shadow: none;
-  }
+  .tile:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,0.16); }
+  .tile img { max-width: 72%; max-height: 72%; object-fit: contain; }
+  .tile.disabled { cursor: default; pointer-events: none; background-color: #f2f4f6; box-shadow: none; }
   .tile.disabled img { opacity: 0.4; }
   .badge {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    font-size: 10px;
-    background-color: #bbb;
-    color: #fff;
-    border-radius: 4px;
-    padding: 1px 6px;
+    position: absolute; top: 6px; right: 6px;
+    font-size: 10px; background-color: #bbb; color: #fff;
+    border-radius: 4px; padding: 1px 6px;
   }
 
-  footer {
-    text-align: center;
-    padding: 24px;
-    font-size: 12px;
-    color: #999;
-  }
+  footer { text-align: center; padding: 24px; font-size: 12px; color: #999; }
 
   /* ロック画面 */
   #lock-screen {
-    position: fixed;
-    inset: 0;
-    background-color: var(--main-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+    position: fixed; inset: 0; background-color: var(--main-color);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
   }
   #lock-box {
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 36px 32px;
-    width: 90%;
-    max-width: 340px;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    background-color: #fff; border-radius: 10px; padding: 36px 32px;
+    width: 90%; max-width: 340px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   }
   #lock-box img { max-height: 60px; margin-bottom: 20px; }
   #lock-box input {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-bottom: 12px;
+    width: 100%; padding: 10px 12px; font-size: 15px;
+    border: 1px solid #ccc; border-radius: 6px; margin-bottom: 12px;
   }
   #lock-box button {
-    width: 100%;
-    padding: 10px;
-    font-size: 15px;
-    background-color: var(--accent-color);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    width: 100%; padding: 10px; font-size: 15px; background-color: var(--accent-color);
+    color: #fff; border: none; border-radius: 6px; cursor: pointer;
   }
   #lock-box button:hover { background-color: #2980b9; }
   #lock-error { color: #e74c3c; font-size: 13px; margin-top: 10px; min-height: 16px; }
-  body.locked > header,
-  body.locked > main,
-  body.locked > footer { display: none; }
+  body.locked > header, body.locked > main, body.locked > footer { display: none; }
 
-  /* ポップアップ */
-  #popup-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1100;
+  /* 汎用モーダル（ポップアップ／編集） */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center; z-index: 1100;
   }
-  #popup-overlay.show { display: flex; }
-  #popup-box {
-    background: #fff;
-    border-radius: 10px;
-    padding: 28px 26px;
-    max-width: 320px;
-    width: 90%;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  .overlay.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 10px; padding: 26px 24px;
+    max-width: 480px; width: 92%; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   }
-  #popup-box p { font-size: 15px; margin: 0 0 20px; line-height: 1.6; }
-  #popup-box button {
-    padding: 8px 24px;
-    font-size: 14px;
-    background: var(--accent-color);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+  .modal p { font-size: 15px; margin: 0 0 18px; line-height: 1.6; text-align: center; }
+  .modal h3 { margin: 0 0 14px; font-size: 16px; color: var(--main-color); }
+  .modal input[type=password], .modal textarea {
+    width: 100%; padding: 10px 12px; font-size: 14px;
+    border: 1px solid #ccc; border-radius: 6px; margin-bottom: 12px; font-family: inherit;
   }
+  .modal textarea { min-height: 160px; resize: vertical; line-height: 1.6; }
+  .modal .hint { font-size: 12px; color: #888; margin: -6px 0 12px; text-align: left; }
+  .modal .btn-row { display: flex; gap: 10px; justify-content: center; }
+  .modal button {
+    padding: 9px 22px; font-size: 14px; border: none; border-radius: 6px; cursor: pointer;
+  }
+  .modal .btn-primary { background: var(--accent-color); color: #fff; }
+  .modal .btn-primary:hover { background: #2980b9; }
+  .modal .btn-secondary { background: #e0e4e8; color: #333; }
+  .modal .err { color: #e74c3c; font-size: 13px; min-height: 16px; text-align: center; }
 </style>
 </head>
 <body class="locked">
@@ -243,14 +181,10 @@
 
 <main>
 
-  <!-- ============================================================= -->
-  <!-- NEWS：お知らせを追加するには下の<li>をコピーして日付と内容を書き換えてください -->
-  <!-- ============================================================= -->
-  <h2>NEWS</h2>
+  <!-- ===== NEWS ===== -->
+  <h2>NEWS <button type="button" class="news-edit-btn" id="news-edit">編集</button></h2>
   <div id="news">
-    <ul>
-      <li><span class="date">2026/07/01</span><span class="text">社内イントラサイトを公開しました。</span></li>
-    </ul>
+    <ul id="news-list"></ul>
   </div>
 
   <!-- ===== 業務システム ===== -->
@@ -259,39 +193,39 @@
     <div class="item">
       <span class="item-name">V-Manage</span>
       <a class="tile" href="https://portal.infomart.co.jp/auth/signin" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=infomart.co.jp&sz=128" alt="V-Manage">
+        <img src="icons/infomart.ico" alt="V-Manage">
       </a>
     </div>
     <div class="item">
       <span class="item-name">インフォマート</span>
       <a class="tile" href="https://www.infomart.co.jp/scripts/logon.asp" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=infomart.co.jp&sz=128" alt="インフォマート">
+        <img src="icons/infomart.ico" alt="インフォマート">
       </a>
     </div>
     <div class="item">
       <span class="item-name">出張申請・報告</span>
       <a class="tile" href="https://shutchou-app.onrender.com/" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=shutchou-app.onrender.com&sz=128" alt="出張申請・報告">
+        <img src="icons/shutchou.svg" alt="出張申請・報告">
       </a>
     </div>
     <div class="item">
       <span class="item-name">売上日報</span>
       <span class="tile disabled">
         <span class="badge">準備中</span>
-        <img src="https://www.google.com/s2/favicons?domain=onrender.com&sz=128" alt="売上日報">
+        <img src="icons/nippo.svg" alt="売上日報">
       </span>
     </div>
     <div class="item">
       <span class="item-name">スケジュール管理</span>
       <a class="tile" href="https://team-schedule.onrender.com/login.html" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=team-schedule.onrender.com&sz=128" alt="スケジュール管理">
+        <img src="icons/schedule.png" alt="スケジュール管理">
       </a>
     </div>
     <div class="item">
       <span class="item-name">月次PL会議</span>
       <span class="tile disabled">
         <span class="badge">準備中</span>
-        <img src="https://www.google.com/s2/favicons?domain=onrender.com&sz=128" alt="月次PL会議">
+        <img src="icons/plkaigi.svg" alt="月次PL会議">
       </span>
     </div>
   </div>
@@ -302,13 +236,13 @@
     <div class="item">
       <span class="item-name">Smart HR</span>
       <a class="tile" href="https://daito-group.smarthr.jp/login" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=smarthr.jp&sz=128" alt="Smart HR">
+        <img src="icons/smarthr.png" alt="Smart HR">
       </a>
     </div>
     <div class="item">
       <span class="item-name">KING OF TIME</span>
       <a class="tile" href="https://s2.ta.kingoftime.jp/admin" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=kingoftime.jp&sz=128" alt="KING OF TIME">
+        <img src="icons/kingoftime.png" alt="KING OF TIME">
       </a>
     </div>
   </div>
@@ -319,19 +253,19 @@
     <div class="item">
       <span class="item-name">ホットペッパーグルメ</span>
       <a class="tile" href="https://www.cms.hotpepper.jp/CLN/login/" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=hotpepper.jp&sz=128" alt="ホットペッパーグルメ">
+        <img src="icons/hotpepper.ico" alt="ホットペッパーグルメ">
       </a>
     </div>
     <div class="item">
       <span class="item-name">イグレック</span>
       <a class="tile" href="https://www2.ipadso.net/hq/login" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=ipadso.net&sz=128" alt="イグレック">
+        <img src="icons/ipadso.ico" alt="イグレック">
       </a>
     </div>
     <div class="item">
       <span class="item-name">BASE</span>
       <a class="tile" href="https://admin.thebase.com/users/login" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=thebase.com&sz=128" alt="BASE">
+        <img src="icons/base.png" alt="BASE">
       </a>
     </div>
   </div>
@@ -343,19 +277,19 @@
       <span class="item-name">エスコンチケット申し込み</span>
       <span class="tile disabled">
         <span class="badge">準備中</span>
-        <img src="https://www.google.com/s2/favicons?domain=hkdballpark.com&sz=128" alt="エスコンチケット申し込み">
+        <img src="icons/escon.png" alt="エスコンチケット申し込み">
       </span>
     </div>
     <div class="item">
       <span class="item-name">サツドラ 5％OFF登録方法</span>
       <a class="tile" href="satudora-5off.pdf" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.google.com/s2/favicons?domain=satudora.jp&sz=128" alt="サツドラ 5％OFF登録方法">
+        <img src="icons/satudora.png" alt="サツドラ 5％OFF登録方法">
       </a>
     </div>
     <div class="item">
       <span class="item-name">スタッフ割チケット</span>
       <a class="tile" href="#" id="staff-ticket">
-        <img src="https://www.google.com/s2/favicons?domain=synology.com&sz=128" alt="スタッフ割チケット">
+        <img src="icons/ticket.svg" alt="スタッフ割チケット">
       </a>
     </div>
   </div>
@@ -366,18 +300,53 @@
   &copy; 2026 社内イントラサイト
 </footer>
 
-<!-- ===== ポップアップ ===== -->
-<div id="popup-overlay">
-  <div id="popup-box">
+<!-- ===== お知らせポップアップ ===== -->
+<div class="overlay" id="popup-overlay">
+  <div class="modal">
     <p id="popup-message"></p>
-    <button type="button" id="popup-close">閉じる</button>
+    <div class="btn-row"><button type="button" class="btn-primary" id="popup-close">閉じる</button></div>
+  </div>
+</div>
+
+<!-- ===== NEWS編集モーダル ===== -->
+<div class="overlay" id="news-overlay">
+  <div class="modal">
+    <!-- パスワード入力 -->
+    <div id="news-auth">
+      <h3>NEWS編集ログイン</h3>
+      <input type="password" id="news-password" placeholder="編集用パスワード">
+      <div class="err" id="news-auth-err"></div>
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" data-close-news>キャンセル</button>
+        <button type="button" class="btn-primary" id="news-auth-ok">ログイン</button>
+      </div>
+    </div>
+    <!-- 編集エリア -->
+    <div id="news-editor" style="display:none;">
+      <h3>NEWS編集</h3>
+      <p class="hint">1行に1件。「日付 | 本文」の形式で入力してください（例：2026/07/01 | 全体朝礼は9時です）</p>
+      <textarea id="news-text"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" data-close-news>キャンセル</button>
+        <button type="button" class="btn-primary" id="news-save">保存する</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 (function () {
+  /* ===== ログイン（サイト全体） ===== */
   var STORAGE_KEY = "intranet_auth_v1";
   var PASSWORD_HASH = "c2a4885469c5457da86f6246a7fc5ca6b77aac45d4b4bf6e98b8cb8bff5449cf";
+  /* ===== NEWS編集用パスワード ===== */
+  var NEWS_EDIT_HASH = "5b1fe420113c8e6cfe71c91972f6bd00184c423409234a97de3343bc9f030568";
+  var NEWS_KEY = "intranet_news_v1";
+
+  /* 初期表示するお知らせ（編集して保存すると上書きされます） */
+  var DEFAULT_NEWS = [
+    { date: "2026/07/01", text: "社内イントラサイトを公開しました。" }
+  ];
 
   function sha256(text) {
     var data = new TextEncoder().encode(text);
@@ -411,7 +380,88 @@
     });
   }
 
-  /* ポップアップ */
+  /* ===== NEWS 表示 ===== */
+  function loadNews() {
+    try {
+      var saved = localStorage.getItem(NEWS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return DEFAULT_NEWS.slice();
+  }
+  function renderNews() {
+    var list = document.getElementById("news-list");
+    var items = loadNews();
+    list.innerHTML = "";
+    if (!items.length) {
+      list.innerHTML = '<li><span class="empty">お知らせはありません。</span></li>';
+      return;
+    }
+    items.forEach(function (n) {
+      var li = document.createElement("li");
+      var d = document.createElement("span");
+      d.className = "date"; d.textContent = n.date;
+      var t = document.createElement("span");
+      t.className = "text"; t.textContent = n.text;
+      li.appendChild(d); li.appendChild(t);
+      list.appendChild(li);
+    });
+  }
+  renderNews();
+
+  /* ===== NEWS 編集 ===== */
+  var newsOverlay = document.getElementById("news-overlay");
+  function openNews() {
+    document.getElementById("news-auth").style.display = "block";
+    document.getElementById("news-editor").style.display = "none";
+    document.getElementById("news-password").value = "";
+    document.getElementById("news-auth-err").textContent = "";
+    newsOverlay.classList.add("show");
+  }
+  function closeNews() { newsOverlay.classList.remove("show"); }
+
+  function newsToText(items) {
+    return items.map(function (n) { return n.date + " | " + n.text; }).join("\n");
+  }
+  function textToNews(text) {
+    return text.split("\n").map(function (line) {
+      line = line.trim();
+      if (!line) return null;
+      var idx = line.indexOf("|");
+      if (idx === -1) return { date: "", text: line };
+      return { date: line.slice(0, idx).trim(), text: line.slice(idx + 1).trim() };
+    }).filter(function (x) { return x; });
+  }
+
+  document.getElementById("news-edit").addEventListener("click", openNews);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-close-news]"), function (b) {
+    b.addEventListener("click", closeNews);
+  });
+  newsOverlay.addEventListener("click", function (e) { if (e.target === this) closeNews(); });
+
+  document.getElementById("news-auth-ok").addEventListener("click", function () {
+    var pw = document.getElementById("news-password").value;
+    sha256(pw).then(function (hash) {
+      if (hash === NEWS_EDIT_HASH) {
+        document.getElementById("news-auth").style.display = "none";
+        document.getElementById("news-editor").style.display = "block";
+        document.getElementById("news-text").value = newsToText(loadNews());
+      } else {
+        document.getElementById("news-auth-err").textContent = "パスワードが違います";
+      }
+    });
+  });
+  document.getElementById("news-password").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("news-auth-ok").click();
+  });
+
+  document.getElementById("news-save").addEventListener("click", function () {
+    var items = textToNews(document.getElementById("news-text").value);
+    localStorage.setItem(NEWS_KEY, JSON.stringify(items));
+    renderNews();
+    closeNews();
+  });
+
+  /* ===== スタッフ割チケット ポップアップ ===== */
   function showPopup(message) {
     document.getElementById("popup-message").textContent = message;
     document.getElementById("popup-overlay").classList.add("show");
