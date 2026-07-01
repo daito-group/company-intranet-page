@@ -90,9 +90,74 @@
     font-size: 12px;
     color: #999;
   }
+  #lock-screen {
+    position: fixed;
+    inset: 0;
+    background-color: var(--main-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  #lock-box {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 36px 32px;
+    width: 90%;
+    max-width: 340px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+  #lock-box img {
+    max-height: 60px;
+    margin-bottom: 20px;
+  }
+  #lock-box input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  #lock-box button {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  #lock-box button:hover {
+    background-color: #2980b9;
+  }
+  #lock-error {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 16px;
+  }
+  body.locked > header,
+  body.locked > main,
+  body.locked > footer {
+    display: none;
+  }
 </style>
 </head>
-<body>
+<body class="locked">
+
+<div id="lock-screen">
+  <div id="lock-box">
+    <img src="yoko_RGB.png" alt="会社ロゴ">
+    <form id="lock-form">
+      <input type="password" id="lock-password" placeholder="パスワードを入力" autocomplete="current-password" autofocus>
+      <button type="submit">入室する</button>
+      <div id="lock-error"></div>
+    </form>
+  </div>
+</div>
 
 <header>
   <img src="yoko_RGB.png" alt="会社ロゴ">
@@ -143,6 +208,45 @@
 <footer>
   &copy; 2026 社内イントラサイト
 </footer>
+
+<script>
+(function () {
+  var STORAGE_KEY = "intranet_auth_v1";
+  var PASSWORD_HASH = "c2a4885469c5457da86f6246a7fc5ca6b77aac45d4b4bf6e98b8cb8bff5449cf";
+
+  function sha256(text) {
+    var data = new TextEncoder().encode(text);
+    return crypto.subtle.digest("SHA-256", data).then(function (buf) {
+      return Array.prototype.map
+        .call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, "0"); })
+        .join("");
+    });
+  }
+
+  function unlock() {
+    document.body.classList.remove("locked");
+    document.getElementById("lock-screen").remove();
+  }
+
+  if (localStorage.getItem(STORAGE_KEY) === PASSWORD_HASH) {
+    unlock();
+    return;
+  }
+
+  document.getElementById("lock-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var input = document.getElementById("lock-password").value;
+    sha256(input).then(function (hash) {
+      if (hash === PASSWORD_HASH) {
+        localStorage.setItem(STORAGE_KEY, hash);
+        unlock();
+      } else {
+        document.getElementById("lock-error").textContent = "パスワードが違います";
+      }
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
