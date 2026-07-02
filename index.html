@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>社内イントラサイト</title>
-<link rel="icon" type="image/png" href="yoko_RGB.png">
-<link rel="apple-touch-icon" href="yoko_RGB.png">
+<link rel="icon" type="image/jpeg" href="logo-mark.jpg">
+<link rel="apple-touch-icon" href="logo-mark.jpg">
 <style>
   :root {
     --main-color: #2c3e50;
@@ -103,6 +103,8 @@
   }
   .tile:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,0.16); }
   .tile img { max-width: 72%; max-height: 72%; object-fit: contain; }
+  /* 元画像が小さいロゴ（イグレック/BASE等）を他と同じ72%の枠まで拡大して表示を揃える */
+  .tile img.enlarge { width: 72%; height: 72%; }
   .tile.disabled { cursor: default; pointer-events: none; background-color: #f2f4f6; box-shadow: none; }
   .tile.disabled img { opacity: 0.4; }
   .badge {
@@ -261,13 +263,13 @@
     <div class="item">
       <span class="item-name">イグレック</span>
       <a class="tile" href="https://www2.ipadso.net/hq/login" target="_blank" rel="noopener noreferrer">
-        <img src="icons/ipadso.ico" alt="イグレック">
+        <img src="icons/ipadso.ico" alt="イグレック" class="enlarge">
       </a>
     </div>
     <div class="item">
       <span class="item-name">BASE</span>
       <a class="tile" href="https://admin.thebase.com/users/login" target="_blank" rel="noopener noreferrer">
-        <img src="icons/base.png" alt="BASE">
+        <img src="icons/base.png" alt="BASE" class="enlarge">
       </a>
     </div>
   </div>
