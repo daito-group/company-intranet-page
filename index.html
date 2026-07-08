@@ -195,6 +195,12 @@
   <h2>▼業務システム</h2>
   <div class="grid">
     <div class="item">
+      <span class="item-name">顧客管理</span>
+      <a class="tile" href="crm.html">
+        <img src="icons/crm.svg" alt="顧客管理">
+      </a>
+    </div>
+    <div class="item">
       <span class="item-name">V-Manage</span>
       <a class="tile" href="https://portal.infomart.co.jp/auth/signin" target="_blank" rel="noopener noreferrer">
         <img src="icons/vmanage.ico" alt="V-Manage">
@@ -340,17 +346,15 @@
 
 <!-- ===== Firebase SDK（NEWSを全員で共有するためのデータベース） ===== -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 
 <script>
 (function () {
-  /* ===== ログイン（サイト全体） ===== */
-  var STORAGE_KEY = "intranet_auth_v1";
-  var PASSWORD_HASH = "c2a4885469c5457da86f6246a7fc5ca6b77aac45d4b4bf6e98b8cb8bff5449cf";
   /* ===== NEWS編集用パスワード ===== */
   var NEWS_EDIT_HASH = "5b1fe420113c8e6cfe71c91972f6bd00184c423409234a97de3343bc9f030568";
 
-  /* ===== Firebase 設定（NEWSの保存先） ===== */
+  /* ===== Firebase 設定（NEWS・顧客管理 共通） ===== */
   var firebaseConfig = {
     apiKey: "AIzaSyBU9eSlKEuJiRl77prZvtANob8kp5mZ5u8",
     authDomain: "daito-intranet.firebaseapp.com",
@@ -361,9 +365,13 @@
     appId: "1:1029120445083:web:4bb2ba8d5760b01330d43e"
   };
 
-  var newsRef = null;
+  /* ログイン用の共通アカウント（Firebase Authentication に登録するメールアドレス） */
+  var LOGIN_EMAIL = "staff@daito-intranet.com";
+
+  var auth = null, newsRef = null;
   try {
     firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
     newsRef = firebase.database().ref("news");
   } catch (e) {
     console.warn("Firebase 初期化に失敗しました", e);
@@ -392,21 +400,36 @@
     if (ls) ls.remove();
   }
 
-  if (localStorage.getItem(STORAGE_KEY) === PASSWORD_HASH) {
-    unlock();
-  } else {
+  /* ===== ログイン（Firebase Authentication） ===== */
+  var newsStarted = false;
+  if (auth) {
+    auth.onAuthStateChanged(function (user) {
+      if (user) { unlock(); startNews(); }
+    });
     document.getElementById("lock-form").addEventListener("submit", function (e) {
       e.preventDefault();
-      var input = document.getElementById("lock-password").value;
-      sha256(input).then(function (hash) {
-        if (hash === PASSWORD_HASH) {
-          localStorage.setItem(STORAGE_KEY, hash);
-          unlock();
-        } else {
-          document.getElementById("lock-error").textContent = "パスワードが違います";
-        }
+      var pw = document.getElementById("lock-password").value;
+      var errEl = document.getElementById("lock-error");
+      errEl.textContent = "確認中...";
+      auth.signInWithEmailAndPassword(LOGIN_EMAIL, pw).catch(function (err) {
+        errEl.textContent = loginErrorMessage(err);
       });
     });
+  } else {
+    document.getElementById("lock-error").textContent = "データベースに接続できません";
+  }
+
+  function loginErrorMessage(err) {
+    var code = err && err.code;
+    if (code === "auth/wrong-password" || code === "auth/invalid-credential" || code === "auth/invalid-login-credentials")
+      return "パスワードが違います";
+    if (code === "auth/user-not-found") return "ログインアカウントが未設定です（管理者へ）";
+    if (code === "auth/operation-not-allowed" || code === "auth/configuration-not-found")
+      return "ログイン認証が有効化されていません（管理者へ）";
+    if (code === "auth/network-request-failed") return "通信エラーです。接続をご確認ください";
+    if (code === "auth/too-many-requests") return "試行回数が多すぎます。しばらくお待ちください";
+    console.warn("ログインエラー", err);
+    return "ログインに失敗しました";
   }
 
   /* ===== NEWS 表示 ===== */
@@ -430,8 +453,10 @@
   }
   renderNews();
 
-  /* Firebaseを監視して、更新があれば全端末で自動反映 */
-  if (newsRef) {
+  /* Firebaseを監視して、更新があれば全端末で自動反映（ログイン後に開始） */
+  function startNews() {
+    if (newsStarted || !newsRef) return;
+    newsStarted = true;
     newsRef.on("value", function (snapshot) {
       var val = snapshot.val();
       currentNews = Array.isArray(val) ? val.filter(function (x) { return x; }) : DEFAULT_NEWS.slice();
